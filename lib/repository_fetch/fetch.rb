@@ -7,14 +7,17 @@ module RepositoryFetch
    PATTERNS = [ 
      {  :pattern => "/redmine_git_fetch/github.com/",
         :uri_prefix => "git@github.com:",
+        :host => "github.com",
         :key => "/home/redmine/data/keys/id_rsa"
      },
      {  :pattern => "/redmine_git_fetch/gitlab.com/",
         :uri_prefix => "git@gitlab.com:",
+        :host => "gitlab.com",
         :key => "/home/redmine/data/keys/id_rsa"
      },
      {  :pattern => "/redmine_git_fetch/git.ewdev.ca/",
         :uri_prefix => "git@git.ewdev.ca:",
+        :host => "git.ewdev.ca",
         :key => "/home/redmine/data/keys/id_rsa"
      }
    ]
@@ -33,15 +36,17 @@ module RepositoryFetch
       return
     end
 
+    add_known_host(p[:host])
+
     # If dir exists and non-empty, should be safe to 'git fetch'
     if Dir.exists?(path) && Dir.entries(path) != [".", ".."]
       puts "Running git fetch on #{path}"
-      puts self.exec_with_key "git -C #{path} fetch --all", p[:key]
+      puts exec_with_key "git -C #{path} fetch --all", p[:key]
     else
       # try cloning the repo
       url = path.sub( p[:pattern], p[:uri_prefix])
       puts "Matched new URL, trying to clone: " + url
-      puts self.exec_with_key "git clone --mirror #{url} #{path}", p[:key]
+      puts exec_with_key "git clone --mirror #{url} #{path}", p[:key]
     end
   end
 
@@ -52,11 +57,23 @@ module RepositoryFetch
   def self.fetch
     Project.active.has_module(:repository).all.each do |project|
       project.repositories.each do |repository|
-        self.clone_or_fetch(repository)
+        clone_or_fetch(repository)
       end
     end
   end
 
-  class Fetcher
+  # Checks if host is in ~/.ssh/known_hosts, adds it if not present
+  def self.add_known_host(host)
+    # if not found...
+    if `ssh-keygen -F #{host} | grep 'found'` == ""
+      # hack to work with 'docker exec' where HOME isn't set (or set to /)
+      ssh_known_hosts = (ENV['HOME'] == "/" or ENV['HOME'] == nil ? "/root" : ENV['HOME']) + "/.ssh/known_hosts"
+      puts "Authorizing #{host}"
+      puts `ssh-keyscan #{host} >> #{ssh_known_hosts}`
+    end
+  end
+
+
+  class Fetch
   end
 end
