@@ -1,0 +1,26 @@
+module RepositoryFetch
+  module RepositoriesHelperPatch
+    def self.included(base) # :nodoc:
+      base.send(:include, InstanceMethods)
+    end
+
+    module InstanceMethods
+      def git_fetch_field_tags(form, repository)
+        #TODO: change URL label to "Path"
+        content_tag('p', form.text_field(:url, :size => 60, :required => true,
+                           :disabled => !repository.safe_attribute?('url'), :required => false) +
+                          content_tag('em', 
+                            l(:text_git_fetch_repository_path_note),
+                            :class => 'info') +
+                          form.text_field(:extra_clone_url, :size => 60, :required => true,
+                           :disabled => !repository.safe_attribute?('url')) +
+                          content_tag('em', 
+                            l(:text_git_fetch_repository_note),
+                            :class => 'info')
+                   )
+      end
+    end
+  end
+
+  RepositoriesHelper.send(:include, RepositoriesHelperPatch)
+end
