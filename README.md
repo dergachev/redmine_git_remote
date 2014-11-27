@@ -26,16 +26,18 @@ GitFetch, enter the clone URL. The identifier and path will be auto-generated, b
 On submitting the repository creation form, the identifier and `url`
 (filesystem path) fields will be auto-generated (if not explicitly provided) as follows:
 
-Clone URL: `https://github.com/dergachev/vagrant-vbox-snapshot`
-URL (filesystem path): `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot`
-Identifier: `vagrant-vbox-snapshot`
+* Clone URL: `https://github.com/dergachev/vagrant-vbox-snapshot`
+* URL (filesystem path): `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot`
+* Identifier: `vagrant-vbox-snapshot`
 
 Once the remote URL is validated, the plugin creates an "empty clone" at the specified path.
 
 This plugin hooks into the core `Repository.fetch_changesets` to automatically
 run `git fetch --all` on all GitRemote managed repositories, before those
-commits are imported into Redmine. To avoid slowing down the GUI, we recommend
-unchecking the "Fetch commits automatically" setting at
+commits are imported into Redmine. 
+
+To avoid slowing down the GUI, we recommend unchecking the "Fetch commits
+automatically" setting at
 [http://redmine-root/settings?tab=repositories](http://redmine-root/settings?tab=repositories)
 and relying on the following cron job as per [Redmine Wiki Instructions](http://www.redmine.org/projects/redmine/wiki/RedmineRepositories):
 
