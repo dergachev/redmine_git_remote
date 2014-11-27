@@ -12,14 +12,18 @@ cd REDMINE_ROOT/plugins
 git clone https://github.com/dergachev/redmine_git_remote
 ```
 
+Then enable the new GitRemote SMC type in [http://redmine-root/settings?tab=repositories](http://redmine-root/settings?tab=repositories)
+
+![](https://dl.dropbox.com/u/29440342/screenshots/AYKNZDTB-2014.11.27-15-59-06.png)
+
 Be sure to install the appropriate SSH keys to `~/.ssh/id_rsa` (for your redmine user).
 I recommend creating a dedicated deployment user on github/gitlab for this purpose.
 
 ## Usage
 
-This plugin defines a new repository type, GitFetch, which allows you to associate
+This plugin defines a new repository type, GitRemote, which allows you to associate
 a remote repository with your Redmine project. First create a new repository of type
-GitFetch, enter the clone URL. The identifier and path will be auto-generated, but can be overriden.
+GitRemote, enter the clone URL. The identifier and path will be auto-generated, but can be overriden.
 
 ![](https://dl.dropbox.com/u/29440342/screenshots/ATIAQXHG-2014.11.27-15-03-51.png)
 
@@ -42,7 +46,13 @@ automatically" setting at
 and relying on the following cron job as per [Redmine Wiki Instructions](http://www.redmine.org/projects/redmine/wiki/RedmineRepositories):
 
 ```
-cd /home/redmine/redmine && ./script/rails runner \"Repository.fetch_changesets\" -e production >> log/cron_rake.log 2>&1
+*/5 * * * * cd /home/redmine/redmine && ./script/rails runner \"Repository.fetch_changesets\" -e production >> log/cron_rake.log 2>&1
+```
+
+To trigger fetch manually, run this:
+
+```
+cd /home/redmine/redmine && ./script/rails runner "Repository.fetch_changesets" -e production
 ```
 
 Note GitRemote doesn't delete the cloned repos when the associated record is deleted from Redmine.

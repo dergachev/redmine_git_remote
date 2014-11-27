@@ -2,7 +2,7 @@ require 'redmine/scm/adapters/git_adapter'
 require 'pathname'
 require 'fileutils'
 
-class Repository::GitFetch < Repository::Git
+class Repository::GitRemote < Repository::Git
 
   PLUGIN_ROOT = Pathname.new(__FILE__).join("../../../..").realpath.to_s
   PATH_PREFIX = PLUGIN_ROOT + "/repos/"
@@ -62,7 +62,7 @@ class Repository::GitFetch < Repository::Git
   end
 
   def clone_empty
-    Repository::GitFetch.add_known_host(clone_host)
+    Repository::GitRemote.add_known_host(clone_host)
 
     unless system "git ls-remote -h #{clone_url}"
       return "#{clone_url} is not a valid remote."
@@ -86,7 +86,7 @@ class Repository::GitFetch < Repository::Git
 
   unloadable
   def self.scm_name
-    'GitFetch'
+    'GitRemote'
   end
 
   def parse(url)
@@ -107,7 +107,7 @@ class Repository::GitFetch < Repository::Git
 
   def fetch
     puts "Fetching repo #{clone_path}"
-    Repository::GitFetch.add_known_host(clone_host)
+    Repository::GitRemote.add_known_host(clone_host)
 
     err = clone_empty
     Rails.logger.warn err if err
@@ -115,12 +115,6 @@ class Repository::GitFetch < Repository::Git
     # If dir exists and non-empty, should be safe to 'git fetch'
     unless system "git -C #{clone_path} fetch --all"
       Rails.logger.warn "Unable to run 'git -c #{clone_path} fetch --all'"
-    end
-  end
-
-  def self.fetch_all
-    Repository::GitFetch.all.each do |x|
-      x.fetch
     end
   end
 
