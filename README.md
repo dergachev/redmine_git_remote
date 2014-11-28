@@ -33,7 +33,7 @@ On submitting the repository creation form, the identifier and `url`
 For example, if you enter `https://github.com/dergachev/vagrant-vbox-snapshot` as the Clone URL,
 it will prefill the Identifier and filesystem path fields as follows:
 * Identifier: `vagrant-vbox-snapshot`
-* URL (filesystem path): `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot`
+* Path: `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot`
 
 Once the remote URL is validated, the plugin creates an [empty clone](http://stackoverflow.com/questions/895819/whats-the-most-straightforward-way-to-clone-an-empty-bare-git-repository) at the specified path.
 
