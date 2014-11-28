@@ -12,12 +12,12 @@ cd REDMINE_ROOT/plugins
 git clone https://github.com/dergachev/redmine_git_remote
 ```
 
-Then enable the new GitRemote SMC type in [http://redmine-root/settings?tab=repositories](http://redmine-root/settings?tab=repositories)
+Then enable the new GitRemote SCM type in [http://redmine-root/settings?tab=repositories](http://redmine-root/settings?tab=repositories)
 
 ![](https://dl.dropbox.com/u/29440342/screenshots/AYKNZDTB-2014.11.27-15-59-06.png)
 
 Be sure to install the appropriate SSH keys to `~/.ssh/id_rsa` (for your redmine user).
-I recommend creating a dedicated deployment user on github/gitlab for this purpose.
+I recommend creating a [dedicated machine user](https://developer.github.com/guides/managing-deploy-keys/#machine-users) on github/gitlab for this purpose.
 
 ## Usage
 
@@ -28,17 +28,18 @@ GitRemote, enter the clone URL. The identifier and path will be auto-generated, 
 ![](https://dl.dropbox.com/u/29440342/screenshots/ATIAQXHG-2014.11.27-15-03-51.png)
 
 On submitting the repository creation form, the identifier and `url`
-(filesystem path) fields will be auto-generated (if not explicitly provided) as follows:
+(filesystem path) fields will be auto-generated (if not explicitly provided).
 
-* Clone URL: `https://github.com/dergachev/vagrant-vbox-snapshot`
-* URL (filesystem path): `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot`
+For example, if you enter `https://github.com/dergachev/vagrant-vbox-snapshot` as the Clone URL,
+it will prefill the Identifier and filesystem path fields as follows:
 * Identifier: `vagrant-vbox-snapshot`
+* URL (filesystem path): `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot`
 
-Once the remote URL is validated, the plugin creates an "empty clone" at the specified path.
+Once the remote URL is validated, the plugin creates an [empty clone](http://stackoverflow.com/questions/895819/whats-the-most-straightforward-way-to-clone-an-empty-bare-git-repository) at the specified path.
 
 This plugin hooks into the core `Repository.fetch_changesets` to automatically
-run `git fetch --all` on all GitRemote managed repositories, before those
-commits are imported into Redmine. 
+run `git fetch --all` on all GitRemote managed repositories as Redmine is about
+to pull in changesets from the local repos.
 
 To avoid slowing down the GUI, we recommend unchecking the "Fetch commits
 automatically" setting at

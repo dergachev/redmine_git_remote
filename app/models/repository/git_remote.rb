@@ -52,7 +52,7 @@ class Repository::GitRemote < Repository::Git
     self.identifier = p[:identifier] if identifier.empty?
     self.url = PATH_PREFIX + p[:path] if url.empty?
 
-    err = clone_empty
+    err = ensure_possibly_empty_clone_exists
     errors.add :extra_clone_url, err if err 
   end
 
@@ -61,7 +61,7 @@ class Repository::GitRemote < Repository::Git
     a.chomp.gsub(/\/$/,'') == b.chomp.gsub(/\/$/,'')
   end
 
-  def clone_empty
+  def ensure_possibly_empty_clone_exists
     Repository::GitRemote.add_known_host(clone_host)
 
     unless system "git ls-remote -h #{clone_url}"
@@ -109,7 +109,7 @@ class Repository::GitRemote < Repository::Git
     puts "Fetching repo #{clone_path}"
     Repository::GitRemote.add_known_host(clone_host)
 
-    err = clone_empty
+    err = ensure_possibly_empty_clone_exists
     Rails.logger.warn err if err
 
     # If dir exists and non-empty, should be safe to 'git fetch'
