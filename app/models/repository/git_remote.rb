@@ -9,11 +9,11 @@ class Repository::GitRemote < Repository::Git
 
   before_validation :initialize_clone
 
-  # TODO: figureo ut how to do this safely (if at all)
+  # TODO: figure out how to do this safely (if at all)
   # before_deletion :rm_removed_repo
   # def rm_removed_repo
   #   if Repository.find_all_by_url(repo.url).length <= 1
-  #     system "rm -Rf #{self.clone_url}"
+  #     system "rm -Rf #{self.clone_path}"
   #   end
   # end
 
@@ -69,7 +69,7 @@ class Repository::GitRemote < Repository::Git
     end
 
     if Dir.exists? clone_path
-      existing_repo_remote = `git -C #{clone_path} config --get remote.origin.url`
+      existing_repo_remote = `git --git-dir #{clone_path} config --get remote.origin.url`
       unless two_remotes_equal(existing_repo_remote, clone_url)
         return "Clone path '#{clone_path}' already exits, unmatching clone url: #{existing_repo_remote}"
       end
@@ -78,8 +78,8 @@ class Repository::GitRemote < Repository::Git
         return  "Unable to run git init at #{clone_path}"
       end
 
-      unless system "git -C #{clone_path} remote add --tags --mirror=fetch origin #{clone_url}"
-        return  "Unable to run: git -C #{clone_path} remote add #{clone_url}"
+      unless system "git --git-dir #{clone_path} remote add --tags --mirror=fetch origin #{clone_url}"
+        return  "Unable to run: git --git-dir #{clone_path} remote add #{clone_url}"
       end
     end
   end
@@ -113,10 +113,11 @@ class Repository::GitRemote < Repository::Git
     Rails.logger.warn err if err
 
     # If dir exists and non-empty, should be safe to 'git fetch'
-    unless system "git -C #{clone_path} fetch --all"
+    unless system "git --git-dir #{clone_path} fetch --all"
       Rails.logger.warn "Unable to run 'git -c #{clone_path} fetch --all'"
     end
   end
+
 
   # Checks if host is in ~/.ssh/known_hosts, adds it if not present
   def self.add_known_host(host)
@@ -125,7 +126,12 @@ class Repository::GitRemote < Repository::Git
       # hack to work with 'docker exec' where HOME isn't set (or set to /)
       ssh_dir = (ENV['HOME'] == "/" || ENV['HOME'] == nil ? "/root" : ENV['HOME']) + "/.ssh"
       ssh_known_hosts = ssh_dir + "/known_hosts"
-      FileUtils.mkdir_p ssh_dir
+      begin
+        FileUtils.mkdir_p ssh_dir
+      rescue e
+        Rails.logger.warn "Unable to create directory #{ssh_dir}: " + "\n" + e.to_s
+        return
+      end
       puts "Adding #{host} to #{ssh_known_hosts}"
       unless system `ssh-keyscan #{host} >> #{ssh_known_hosts}`
         Rails.logger.warn "Unable to add known host #{host} to #{ssh_known_hosts}"
