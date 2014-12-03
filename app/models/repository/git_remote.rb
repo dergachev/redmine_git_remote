@@ -47,13 +47,13 @@ class Repository::GitRemote < Repository::Git
   def initialize_clone
     # avoids crash in RepositoriesController#destroy
     return unless attributes["extra_info"]["extra_clone_url"]
-    
+
     p = parse(attributes["extra_info"]["extra_clone_url"])
     self.identifier = p[:identifier] if identifier.empty?
     self.url = PATH_PREFIX + p[:path] if url.empty?
 
     err = ensure_possibly_empty_clone_exists
-    errors.add :extra_clone_url, err if err 
+    errors.add :extra_clone_url, err if err
   end
 
   # equality check ignoring trailing whitespace and slashes
@@ -101,7 +101,7 @@ class Repository::GitRemote < Repository::Git
                     .gsub(/\.git$/, '')      # Remove trailing .git
     ret[:host] = ret[:path].split('/').first
     #TODO: handle project uniqueness automatically or prompt
-    ret[:identifier] =   ret[:path].split('/').last.downcase
+    ret[:identifier] =   ret[:path].split('/').last.downcase.gsub(/[^a-z0-9_-]/,'-')
     return ret
   end
 
@@ -117,7 +117,6 @@ class Repository::GitRemote < Repository::Git
       Rails.logger.warn "Unable to run 'git -c #{clone_path} fetch --all'"
     end
   end
-
 
   # Checks if host is in ~/.ssh/known_hosts, adds it if not present
   def self.add_known_host(host)
@@ -138,5 +137,4 @@ class Repository::GitRemote < Repository::Git
       end
     end
   end
-
 end
