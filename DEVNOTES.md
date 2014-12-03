@@ -36,4 +36,7 @@ bundle exec rails dbconsole production
 # config.consider_all_requests_local = true
 apt-get update; apt-get install vim -y; vim /home/redmine/redmine/config/environments/production.rb
 
+# useful under https://github.com/dergachev/docker-redmine
+rsync -avq --chown=redmine:redmine /home/redmine/data/plugins/ /home/redmine/redmine/plugins/; supervisorctl restart unicorn
+
 ```
