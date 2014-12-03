@@ -36,9 +36,7 @@ Some extra tips:
   [dedicated account for redmine](https://developer.github.com/guides/managing-deploy-keys/#machine-users)
   and installing the keys there.
 * On Ubuntu, the `www-data` user's $HOME is `/var/www`, and by default it's owned by root.
-  That means you might have to do this before installing Redmine:
-        mkdir /var/www/.ssh
-        chown www-data:www-data /var/www/.ssh
+  That means you might have to do this before installing Redmine: `sudo mkdir /var/www/.ssh; sudo chown www-data:www-data /var/www/.ssh`
 
 ## Usage
 
