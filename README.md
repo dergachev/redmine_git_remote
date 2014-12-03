@@ -16,8 +16,29 @@ Then enable the new GitRemote SCM type in [http://redmine-root/settings?tab=repo
 
 ![](https://dl.dropbox.com/u/29440342/screenshots/AYKNZDTB-2014.11.27-15-59-06.png)
 
-Be sure to install the appropriate SSH keys to `~/.ssh/id_rsa` (for your redmine user).
-I recommend creating a [dedicated machine user](https://developer.github.com/guides/managing-deploy-keys/#machine-users) on github/gitlab for this purpose.
+## Supporting private repos
+
+For security sake, we don't support cloning over HTTPS with username password, but only via SSH.
+
+For example:
+
+* This private repo will fail to clone: `https://github.com/dergachev/my-secret-repo`
+* Instead, use the SSH form: `git@github.com:evolvingweb/my-secret-repo.git`
+
+If you're going to use the SSH form, you'll need to install the appropriate SSH
+keys to `~/.ssh/id_rsa` (in the home directory of your redmine webserver user,
+likely www-data).
+
+Some extra tips:
+
+* For GitHub/GitLab, we have found it too troublesome to install repository-specific SSH keys.
+  Instead we ended up creating recommend creating a
+  [dedicated account for redmine](https://developer.github.com/guides/managing-deploy-keys/#machine-users)
+  and installing the keys there.
+* On Ubuntu, the `www-data` user's $HOME is `/var/www`, and by default it's owned by root.
+  That means you might have to do this before installing Redmine:
+        mkdir /var/www/.ssh
+        chown www-data:www-data /var/www/.ssh
 
 ## Usage
 
@@ -56,6 +77,9 @@ To trigger fetch manually, run this:
 cd /home/redmine/redmine && ./script/rails runner "Repository.fetch_changesets" -e production
 ```
 
-Note GitRemote doesn't delete the cloned repos when the associated record is deleted from Redmine.
+Notes:
 
-Tested on Redmine 2.6.
+* Tested on Redmine 2.6.
+* Currently alpha level, use at your own risk.
+* Currently insecure, only install if all redmine project admins are trusted.
+* This plugin doesn't clean-up (delete) cloned repos from the file system when the record is deleted from Redmine.
