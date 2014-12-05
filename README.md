@@ -16,6 +16,11 @@ Then enable the new GitRemote SCM type in [http://redmine-root/settings?tab=repo
 
 ![](https://dl.dropbox.com/u/29440342/screenshots/AYKNZDTB-2014.11.27-15-59-06.png)
 
+The plugin shells out to the following binaries, so make sure they're available:
+* git
+* ssh-keyscan
+* ssh-keygen
+
 ## Supporting private repos
 
 For security sake, we don't support cloning over HTTPS with username password, but only via SSH.
@@ -77,7 +82,15 @@ cd /home/redmine/redmine && ./script/rails runner "Repository.fetch_changesets" 
 
 Notes:
 
-* Tested on Redmine 2.6.
-* Currently alpha level, use at your own risk.
-* Currently insecure, only install if all redmine project admins are trusted.
-* This plugin doesn't clean-up (delete) cloned repos from the file system when the record is deleted from Redmine.
+* Tested on Redmine 2.6 and ruby 2.1
+* Currently alpha state, use at your own risk. Given possible security risks of shelling out,
+  we recommend using this plugin only if all RedMine project admins are trusted users.
+* This plugin doesn't clean-up (delete) cloned repos from the file system when the record
+  is deleted from Redmine.
+* Currently Redmine will crash if this plugin is uninstalled, as rails can't
+  seem to handle model classes disappearing while db records reference them.
+  This snippet should make the error go away:
+
+    ```
+    ./script/rails runner 'ActiveRecord::Base.connection.execute("UPDATE repositories SET type=\"Repository::Git\" WHERE type = \"Repository::GitRemote\")' -e production
+    ```
