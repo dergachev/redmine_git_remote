@@ -36,11 +36,29 @@ class Repository::GitRemote < Repository::Git
     return p[:host]
   end
 
-  # hook into Repository.fetch_changesets to also run 'git fetch'
+  # Hook into Repository.fetch_changesets to also run 'git fetch'.
   def fetch_changesets
+    # ensure we don't fetch twice during the same request
+    return if @already_fetched
+    @already_fetched = true
+
     puts "Calling fetch changesets on #{clone_path}"
     # runs git fetch
     self.fetch
+    super
+  end
+
+  # Override default_branch to fetch, otherwise caching problems in
+  # find_project_repository prevent Repository::Git#fetch_changesets from running.
+  #
+  # Ideally this would only be run for RepositoriesController#show.
+  def default_branch
+    if self.branches == [] && self.project.active? && Setting.autofetch_changesets?
+      # git_adapter#branches caches @branches incorrectly, reset it
+      scm.instance_variable_set :@branches, nil
+      # NB: fetch_changesets is idemptotent during a given request, so OK to call it 2x
+      self.fetch_changesets
+    end
     super
   end
 
