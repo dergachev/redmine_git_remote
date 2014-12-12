@@ -99,7 +99,7 @@ class Repository::GitRemote < Repository::Git
         return  "Unable to run: git init --bare #{clone_path}"
       end
 
-      unless system "git", "--git-dir", clone_path, "remote", "add", "--tags", "--mirror=fetch", "origin",  clone_url
+      unless system "git", "--git-dir", clone_path, "remote", "add", "--mirror=fetch", "origin",  clone_url
         return  "Unable to run: git --git-dir #{clone_path} remote add #{clone_url}"
       end
     end
