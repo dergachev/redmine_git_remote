@@ -36,6 +36,15 @@ class Repository::GitRemote < Repository::Git
     return p[:host]
   end
 
+  def clone_protocol_ssh?
+    # Possible valid values (via http://git-scm.com/book/ch4-1.html):
+    #  ssh://user@server/project.git
+    #  user@server:project.git
+    #  server:project.git
+    # For simplicity we just assume if it's not HTTP(S), then it's SSH.
+    !clone_url.match(/^http/)
+  end
+
   # Hook into Repository.fetch_changesets to also run 'git fetch'.
   def fetch_changesets
     # ensure we don't fetch twice during the same request
@@ -81,7 +90,7 @@ class Repository::GitRemote < Repository::Git
   end
 
   def ensure_possibly_empty_clone_exists
-    Repository::GitRemote.add_known_host(clone_host)
+    Repository::GitRemote.add_known_host(clone_host) if clone_protocol_ssh?
 
     unless system "git", "ls-remote",  "-h",  clone_url
       return "#{clone_url} is not a valid remote."
@@ -128,7 +137,7 @@ class Repository::GitRemote < Repository::Git
 
   def fetch
     puts "Fetching repo #{clone_path}"
-    Repository::GitRemote.add_known_host(clone_host)
+    Repository::GitRemote.add_known_host(clone_host) if clone_protocol_ssh?
 
     err = ensure_possibly_empty_clone_exists
     Rails.logger.warn err if err
