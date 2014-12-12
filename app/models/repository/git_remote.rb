@@ -97,7 +97,7 @@ class Repository::GitRemote < Repository::Git
     end
 
     if Dir.exists? clone_path
-      existing_repo_remote, err, status = Open3::capture3("git", "--git-dir", clone_path, "config", "--get", "remote.origin.url")
+      existing_repo_remote, status = Open3::capture2("git", "--git-dir", clone_path, "config", "--get", "remote.origin.url")
       return "Unable to run: git --git-dir #{clone_path} config --get remote.origin.url" unless status.success?
 
       unless two_remotes_equal(existing_repo_remote, clone_url)
@@ -119,7 +119,10 @@ class Repository::GitRemote < Repository::Git
     'GitRemote'
   end
 
+  # TODO: first validate git URL and display error message
   def parse(url)
+    url.strip!
+
     ret = {}
     # start with http://github.com/evolvingweb/git_remote or git@git.ewdev.ca:some/repo.git
     ret[:url] = url
