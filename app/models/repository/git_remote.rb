@@ -1,7 +1,8 @@
 require 'redmine/scm/adapters/git_adapter'
 require 'pathname'
 require 'fileutils'
-require 'open3'
+# require 'open3'
+require_dependency 'redmine_git_remote/poor_mans_capture3'
 
 class Repository::GitRemote < Repository::Git
 
@@ -97,7 +98,7 @@ class Repository::GitRemote < Repository::Git
     end
 
     if Dir.exists? clone_path
-      existing_repo_remote, status = Open3::capture2("git", "--git-dir", clone_path, "config", "--get", "remote.origin.url")
+      existing_repo_remote, status = RedmineGitRemote::PoorMansCapture3::capture2("git", "--git-dir", clone_path, "config", "--get", "remote.origin.url")
       return "Unable to run: git --git-dir #{clone_path} config --get remote.origin.url" unless status.success?
 
       unless two_remotes_equal(existing_repo_remote, clone_url)
@@ -154,7 +155,7 @@ class Repository::GitRemote < Repository::Git
   # Checks if host is in ~/.ssh/known_hosts, adds it if not present
   def self.add_known_host(host)
     # if not found...
-    out, status = Open3::capture2("ssh-keygen", "-F", host)
+    out, status = RedmineGitRemote::PoorMansCapture3::capture2("ssh-keygen", "-F", host)
     raise "Unable to run 'ssh-keygen -F #{host}" unless status
     unless out.match /found/
       # hack to work with 'docker exec' where HOME isn't set (or set to /)
@@ -167,7 +168,7 @@ class Repository::GitRemote < Repository::Git
       end
 
       puts "Adding #{host} to #{ssh_known_hosts}"
-      out, status = Open3::capture2("ssh-keyscan", host)
+      out, status = RedmineGitRemote::PoorMansCapture3::capture2("ssh-keyscan", host)
       raise "Unable to run 'ssh-keyscan #{host}'" unless status
       Kernel::open(ssh_known_hosts, 'a') { |f| f.puts out}
     end
