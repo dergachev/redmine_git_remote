@@ -127,12 +127,14 @@ class Repository::GitRemote < Repository::Git
     ret = {}
     # start with http://github.com/evolvingweb/git_remote or git@git.ewdev.ca:some/repo.git
     ret[:url] = url
+
+    # NB: Starting lines with ".gsub" is a syntax error in ruby 1.8.
+    #     See http://stackoverflow.com/q/12906048/9621
     # path is github.com/evolvingweb/muhc-ci
-    ret[:path] = url
-                    .gsub(/^.*:\/\//, '')    # Remove anything before ://
-                    .gsub(/:/, '/')          # convert ":" to "/"
-                    .gsub(/^.*@/, '')        # Remove anything before @
-                    .gsub(/\.git$/, '')      # Remove trailing .git
+    ret[:path] = url.gsub(/^.*:\/\//, '').   # Remove anything before ://
+                     gsub(/:/, '/').         # convert ":" to "/"
+                     gsub(/^.*@/, '').       # Remove anything before @
+                     gsub(/\.git$/, '')      # Remove trailing .git
     ret[:host] = ret[:path].split('/').first
     #TODO: handle project uniqueness automatically or prompt
     ret[:identifier] =   ret[:path].split('/').last.downcase.gsub(/[^a-z0-9_-]/,'-')
