@@ -165,8 +165,8 @@ class Repository::GitRemote < Repository::Git
       ssh_known_hosts = ssh_dir + "/known_hosts"
       begin
         FileUtils.mkdir_p ssh_dir
-      rescue e
-        raise "Unable to create directory #{ssh_dir}: " + "\n\n" + e.to_s
+      rescue Exception => e
+        raise "Unable to create directory #{ssh_dir}: " + e.to_s
       end
 
       puts "Adding #{host} to #{ssh_known_hosts}"
