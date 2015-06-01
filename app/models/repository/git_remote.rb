@@ -110,7 +110,7 @@ class Repository::GitRemote < Repository::Git
       end
 
       unless system "git", "--git-dir", clone_path, "remote", "add", "--mirror=fetch", "origin",  clone_url
-        return  "Unable to run: git --git-dir #{clone_path} remote add #{clone_url}"
+        return  "Unable to run: git --git-dir #{clone_path} remote add --mirror=fetch origin #{clone_url}"
       end
     end
   end

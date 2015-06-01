@@ -17,7 +17,7 @@ Then enable the new GitRemote SCM type in [http://redmine-root/settings?tab=repo
 ![](https://dl.dropbox.com/u/29440342/screenshots/AYKNZDTB-2014.11.27-15-59-06.png)
 
 The plugin shells out to the following binaries, so make sure they're available:
-* git
+* git 1.7.5+ - a version recent enough to support `get remote add --mirror=fetch origin URL`
 * ssh-keyscan
 * ssh-keygen
 
