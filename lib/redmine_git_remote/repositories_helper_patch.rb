@@ -7,7 +7,7 @@ module RedmineGitRemote
     module InstanceMethods
       def git_remote_field_tags(form, repository)
         content_tag('p', form.text_field(:url,
-                           :size => 60, :required => true, :required => false,
+                           :size => 60, :required => false,
                            :disabled => !repository.safe_attribute?('url'),
                            :label => l(:field_path_to_repository)) +
                           content_tag('em', l(:text_git_remote_path_note), :class => 'info') +
