@@ -71,7 +71,7 @@ automatically" setting at
 and relying on the following cron job as per [Redmine Wiki Instructions](http://www.redmine.org/projects/redmine/wiki/RedmineRepositories):
 
 ```
-*/5 * * * * cd /home/redmine/redmine && ./script/rails runner \"Repository.fetch_changesets\" -e production >> log/cron_rake.log 2>&1
+*/5 * * * * cd /home/redmine/redmine && ./script/rails runner Repository.fetch_changesets -e production >> log/cron_rake.log 2>&1
 ```
 
 To trigger fetch manually, run this:
