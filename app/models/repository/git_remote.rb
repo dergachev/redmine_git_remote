@@ -18,8 +18,20 @@ class Repository::GitRemote < Repository::Git
   #     system "rm -Rf #{self.clone_path}"
   #   end
   # end
-
-
+  
+  
+  before_destroy :remove_unused_repos
+  
+  ## Deletes repository directory if it's inside plugin directory (i.e. belongs to plugin)
+  ## and this repo is not used by other repositories
+  def remove_unused_repos
+      inside_plugin_bundle = self.clone_path.include? PATH_PREFIX
+      nobody_else_need_it = Repository.where(url: self.relative_url).count <= 1
+      if inside_plugin_bundle && nobody_else_need_it
+          system "rm -Rf #{self.clone_path}"
+      end
+  end
+  
   ## Overrides URL setters/getters to avoid absolute locations in database
   
   def relative_url
