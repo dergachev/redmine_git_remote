@@ -19,6 +19,31 @@ class Repository::GitRemote < Repository::Git
   #   end
   # end
 
+
+  ## Overrides URL setters/getters to avoid absolute locations in database
+  
+  def relative_url
+      self.url.gsub(PATH_PREFIX, PATH_SHORT_PREFIX)
+  end
+
+  def url
+      super.gsub(PATH_SHORT_PREFIX, PATH_PREFIX)
+  end
+
+  def url=(url)
+      super(url.gsub(PATH_PREFIX, PATH_SHORT_PREFIX))
+  end
+
+  def root_url
+      super.gsub(PATH_SHORT_PREFIX, PATH_PREFIX)
+  end
+
+  def root_url=(root_url)
+      super(root_url.gsub(PATH_PREFIX, PATH_SHORT_PREFIX))
+  end
+  
+  ##
+
   def extra_clone_url
     return nil unless extra_info
     extra_info["extra_clone_url"]
