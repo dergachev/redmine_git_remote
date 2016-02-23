@@ -8,18 +8,9 @@ class Repository::GitRemote < Repository::Git
 
   PLUGIN_ROOT = Pathname.new(__FILE__).join("../../../..").realpath.to_s
   PATH_PREFIX = PLUGIN_ROOT + "/repos/"
-
+  PATH_SHORT_PREFIX = "(HOME)/"
+  
   before_validation :initialize_clone
-
-  # TODO: figure out how to do this safely (if at all)
-  # before_deletion :rm_removed_repo
-  # def rm_removed_repo
-  #   if Repository.find_all_by_url(repo.url).length <= 1
-  #     system "rm -Rf #{self.clone_path}"
-  #   end
-  # end
-  
-  
   before_destroy :remove_unused_repos
   
   ## Deletes repository directory if it's inside plugin directory (i.e. belongs to plugin)
@@ -31,6 +22,14 @@ class Repository::GitRemote < Repository::Git
           system "rm -Rf #{self.clone_path}"
       end
   end
+  
+  # TODO: figure out how to do this safely (if at all)
+  # before_deletion :rm_removed_repo
+  # def rm_removed_repo
+  #   if Repository.find_all_by_url(repo.url).length <= 1
+  #     system "rm -Rf #{self.clone_path}"
+  #   end
+  # end
   
   ## Overrides URL setters/getters to avoid absolute locations in database
   
