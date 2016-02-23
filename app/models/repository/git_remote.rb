@@ -8,7 +8,7 @@ class Repository::GitRemote < Repository::Git
 
   PLUGIN_ROOT = Pathname.new(__FILE__).join("../../../..").realpath.to_s
   PATH_PREFIX = PLUGIN_ROOT + "/repos/"
-  PATH_SHORT_PREFIX = "(HOME)/"
+  RELATIVE_PATH_PREFIX = "(HOME)/"
   
   before_validation :initialize_clone
   before_destroy :remove_unused_repos
@@ -34,23 +34,23 @@ class Repository::GitRemote < Repository::Git
   ## Overrides URL setters/getters to avoid absolute locations in database
   
   def relative_url
-      self.url.gsub(PATH_PREFIX, PATH_SHORT_PREFIX)
+      self.url.gsub(PATH_PREFIX, RELATIVE_PATH_PREFIX)
   end
 
   def url
-      super.gsub(PATH_SHORT_PREFIX, PATH_PREFIX)
+      super.gsub(RELATIVE_PATH_PREFIX, PATH_PREFIX)
   end
 
   def url=(url)
-      super(url.gsub(PATH_PREFIX, PATH_SHORT_PREFIX))
+      super(url.gsub(PATH_PREFIX, RELATIVE_PATH_PREFIX))
   end
 
   def root_url
-      super.gsub(PATH_SHORT_PREFIX, PATH_PREFIX)
+      super.gsub(RELATIVE_PATH_PREFIX, PATH_PREFIX)
   end
 
   def root_url=(root_url)
-      super(root_url.gsub(PATH_PREFIX, PATH_SHORT_PREFIX))
+      super(root_url.gsub(PATH_PREFIX, RELATIVE_PATH_PREFIX))
   end
   
   ##
