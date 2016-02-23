@@ -8,9 +8,21 @@ class Repository::GitRemote < Repository::Git
 
   PLUGIN_ROOT = Pathname.new(__FILE__).join("../../../..").realpath.to_s
   PATH_PREFIX = PLUGIN_ROOT + "/repos/"
-
+  RELATIVE_PATH_PREFIX = "(HOME)/"
+  
   before_validation :initialize_clone
-
+  before_destroy :remove_unused_repos
+  
+  ## Deletes repository directory if it's inside plugin directory (i.e. belongs to plugin)
+  ## and this repo is not used by other repositories
+  def remove_unused_repos
+      inside_plugin_bundle = self.clone_path.include? PATH_PREFIX
+      nobody_else_need_it = Repository.where(url: self.relative_url).count <= 1
+      if inside_plugin_bundle && nobody_else_need_it
+          system "rm -Rf #{self.clone_path}"
+      end
+  end
+  
   # TODO: figure out how to do this safely (if at all)
   # before_deletion :rm_removed_repo
   # def rm_removed_repo
@@ -18,6 +30,30 @@ class Repository::GitRemote < Repository::Git
   #     system "rm -Rf #{self.clone_path}"
   #   end
   # end
+  
+  ## Overrides URL setters/getters to avoid absolute locations in database
+  
+  def relative_url
+      self.url.gsub(PATH_PREFIX, RELATIVE_PATH_PREFIX)
+  end
+
+  def url
+      super.gsub(RELATIVE_PATH_PREFIX, PATH_PREFIX)
+  end
+
+  def url=(url)
+      super(url.gsub(PATH_PREFIX, RELATIVE_PATH_PREFIX))
+  end
+
+  def root_url
+      super.gsub(RELATIVE_PATH_PREFIX, PATH_PREFIX)
+  end
+
+  def root_url=(root_url)
+      super(root_url.gsub(PATH_PREFIX, RELATIVE_PATH_PREFIX))
+  end
+  
+  ##
 
   def extra_clone_url
     return nil unless extra_info
