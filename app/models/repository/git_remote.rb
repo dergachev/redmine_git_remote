@@ -10,14 +10,7 @@ class Repository::GitRemote < Repository::Git
   PATH_PREFIX = PLUGIN_ROOT + "/repos/"
 
   before_validation :initialize_clone
-
-  # TODO: figure out how to do this safely (if at all)
-  # before_deletion :rm_removed_repo
-  # def rm_removed_repo
-  #   if Repository.find_all_by_url(repo.url).length <= 1
-  #     system "rm -Rf #{self.clone_path}"
-  #   end
-  # end
+  before_destroy :remove_unused_repos
 
   def extra_clone_url
     return nil unless extra_info
@@ -83,6 +76,16 @@ class Repository::GitRemote < Repository::Git
 
     err = ensure_possibly_empty_clone_exists
     errors.add :extra_clone_url, err if err
+  end
+
+  ## Deletes repository directory if it's inside plugin directory (i.e. belongs to plugin)
+  ## and this repo is not used by other repositories
+  def remove_unused_repos
+    inside_plugin_bundle = self.clone_path.include? PATH_PREFIX
+    nobody_else_need_it = Repository.where(url: self.url).count <= 1
+    if inside_plugin_bundle && nobody_else_need_it
+      system "rm -Rf #{self.clone_path}"
+    end
   end
 
   # equality check ignoring trailing whitespace and slashes
