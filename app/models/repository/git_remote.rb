@@ -82,7 +82,7 @@ class Repository::GitRemote < Repository::Git
   ## and this repo is not used by other repositories
   def remove_unused_repos
     inside_plugin_bundle = self.clone_path.include? PATH_PREFIX
-    nobody_else_need_it = Repository.where(url: self.relative_url).count <= 1
+    nobody_else_need_it = Repository.where(url: self.url).count <= 1
     if inside_plugin_bundle && nobody_else_need_it
       system "rm -Rf #{self.clone_path}"
     end
