@@ -2,16 +2,16 @@
 
 ### TODOs
 
-* integrate webhook support (callback to accept POST, figure out repo, run git fetch on it), check security / DOS
+* integrate webhook support (callback to accept POST, figure out repo, run git fetch on it) --> see [redmine_github_hook](https://github.com/koppen/redmine_github_hook) meanwhile
+* check security / DOS
 * key management (currently user needs to populate ~/.ssh/* config files manually)
-* cleanup cloned repos on Repository#destroy
 * make sure git fetch doesn't hang (timeout, background, local vs remote fetch interference)
 * last fetched status, clearer error handling
-* on plugin uninstall, Redmine will crash (rails hates it when you remove model classes)
-* (provide a rake command to convert to Git type)
 * initialize_clone should only run on new objects (since only "Main repository" is editable)
 * key handling
-* removing the plugin, what happens to records?
+* on plugin uninstall, Redmine will crash (rails hates it when you remove model classes)
+  - provide a rake command to convert to Git type
+  - removing the plugin, what happens to records?
 * conversion of legacy records
 
 
