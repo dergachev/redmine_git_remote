@@ -43,6 +43,17 @@ Some extra tips:
 * On Ubuntu, the `www-data` user's $HOME is `/var/www`, and by default it's owned by root.
   That means you might have to do this before installing Redmine: `sudo mkdir /var/www/.ssh; sudo chown www-data:www-data /var/www/.ssh`
 
+## Configuration
+
+The plugin offers two configuration options:
+
+* Local Repository Path (git_local_path) - Path, where repositories are created on the local system. This defaults to `REDMINE_PLUGINS_PATH/redmine_git_remote/repos`.
+* Remote Repository Url Prefix - Default Prefix of the Remote Repository. The Default Prefix for Remote Repositories, defaults to an empty value. If this value is set, this prefix is shown in the Clone URL field of a repository by default, but can be overwritten by the user (eg. https://github.com/).
+
+![](doc/settings.jpg)
+
+The above configuration can be found at `Administration -> Plugins -> Redmine Git Remote -> Config`. Furthermore for initial values, the file `redmine_git_remote/conf/settings.yml` can be used.
+
 ## Usage
 
 This plugin defines a new repository type, GitRemote, which allows you to associate
@@ -57,7 +68,7 @@ On submitting the repository creation form, the identifier and `url`
 For example, if you enter `https://github.com/dergachev/vagrant-vbox-snapshot` as the Clone URL,
 it will prefill the Identifier and filesystem path fields as follows:
 * Identifier: `vagrant-vbox-snapshot`
-* Path: `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot`
+* Path: `REDMINE_PLUGINS_PATH/redmine_git_remote/repos/github.com/dergachev/vagrant-vbox-snapshot` (Note: The Path can be configured using the above mentioned method, but can also be entered for each repository.)
 
 Once the remote URL is validated, the plugin creates an [empty clone](http://stackoverflow.com/questions/895819/whats-the-most-straightforward-way-to-clone-an-empty-bare-git-repository) at the specified path.
 
@@ -83,6 +94,7 @@ cd /home/redmine/redmine && ./script/rails runner "Repository.fetch_changesets" 
 Notes:
 
 * Tested on Redmine 2.6 and ruby 2.1
+* Tested on Redmine 3.3.1
 * Currently alpha state, use at your own risk. Given possible security risks of shelling out,
   we recommend using this plugin only if all RedMine project admins are trusted users.
 * This plugin doesn't clean-up (delete) cloned repos from the file system when the record
