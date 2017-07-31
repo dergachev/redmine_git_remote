@@ -12,7 +12,7 @@ module RedmineGitRemote
                            :label => l(:field_path_to_repository)) +
                           content_tag('em', l(:text_git_remote_path_note), :class => 'info') +
                           form.text_field(:extra_clone_url, :size => 60, :required => true,
-                           :disabled => !repository.safe_attribute?('url')) +
+                           :disabled => !repository.safe_attribute?('url'), name: 'repository[extra_info][extra_clone_url]') +
                           content_tag('em', l(:text_git_remote_url_note), :class => 'info')
                    )
       end
