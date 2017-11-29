@@ -11,6 +11,8 @@ class Repository::GitRemote < Repository::Git
 
   before_validation :initialize_clone
 
+  safe_attributes 'extra_info', :if => lambda {|repository, _user| repository.new_record?}
+
   # TODO: figure out how to do this safely (if at all)
   # before_deletion :rm_removed_repo
   # def rm_removed_repo
