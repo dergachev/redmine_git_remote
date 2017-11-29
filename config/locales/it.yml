@@ -1,0 +1,4 @@
+it:
+  field_extra_clone_url: URL Clone
+  text_git_remote_url_note: URL da cui clonare.
+  text_git_remote_path_note: Percorso assoluto del filesystem in cui clonare. Lasciare bianco per autopopolare da URL.
