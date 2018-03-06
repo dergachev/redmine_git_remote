@@ -14,7 +14,7 @@ git clone https://github.com/dergachev/redmine_git_remote
 
 Then enable the new GitRemote SCM type in [http://redmine-root/settings?tab=repositories](http://redmine-root/settings?tab=repositories)
 
-![](https://dl.dropbox.com/u/29440342/screenshots/AYKNZDTB-2014.11.27-15-59-06.png)
+![](images/available-scm.png)
 
 The plugin shells out to the following binaries, so make sure they're available:
 * git 1.7.5+ - a version recent enough to support `get remote add --mirror=fetch origin URL`
@@ -49,7 +49,7 @@ This plugin defines a new repository type, GitRemote, which allows you to associ
 a remote repository with your Redmine project. First create a new repository of type
 GitRemote, enter the clone URL. The identifier and path will be auto-generated, but can be overriden.
 
-![](https://dl.dropbox.com/u/29440342/screenshots/ATIAQXHG-2014.11.27-15-03-51.png)
+![](images/git-remote-config.png)
 
 On submitting the repository creation form, the identifier and `url`
 (filesystem path) fields will be auto-generated (if not explicitly provided).
@@ -71,18 +71,18 @@ automatically" setting at
 and relying on the following cron job as per [Redmine Wiki Instructions](http://www.redmine.org/projects/redmine/wiki/RedmineRepositories):
 
 ```
-*/5 * * * * cd /home/redmine/redmine && ./script/rails runner Repository.fetch_changesets -e production >> log/cron_rake.log 2>&1
+*/5 * * * * cd /home/redmine/redmine && ./bin/rails runner Repository.fetch_changesets -e production >> log/cron_rake.log 2>&1
 ```
 
 To trigger fetch manually, run this:
 
 ```
-cd /home/redmine/redmine && ./script/rails runner "Repository.fetch_changesets" -e production
+cd /home/redmine/redmine && ./bin/rails runner "Repository.fetch_changesets" -e production
 ```
 
 Notes:
 
-* Tested on Redmine 2.6 and ruby 2.1
+* Tested on Redmine 3.4 and ruby 2.3
 * Currently alpha state, use at your own risk. Given possible security risks of shelling out,
   we recommend using this plugin only if all RedMine project admins are trusted users.
 * This plugin doesn't clean-up (delete) cloned repos from the file system when the record
@@ -92,5 +92,5 @@ Notes:
   This snippet should make the error go away:
 
     ```
-    ./script/rails runner 'ActiveRecord::Base.connection.execute("UPDATE repositories SET type=\"Repository::Git\" WHERE type = \"Repository::GitRemote\")' -e production
+    ./bin/rails runner 'ActiveRecord::Base.connection.execute("UPDATE repositories SET type=\"Repository::Git\" WHERE type = \"Repository::GitRemote\")' -e production
     ```
