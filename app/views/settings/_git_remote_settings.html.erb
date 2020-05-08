@@ -1,0 +1,7 @@
+<h3><%= t('config.title') %></h3>
+
+<p>
+  <label><%= t('config.repo_clone_path') %></label>
+  <%= text_field_tag 'settings[git_remote_repo_clone_path]', @settings['git_remote_repo_clone_path'], :size => '60' %>
+  <%= t('config.clone_path_hint') %>
+</p>
