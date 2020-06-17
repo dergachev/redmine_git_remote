@@ -2,3 +2,7 @@ en:
   field_extra_clone_url: Clone URL
   text_git_remote_url_note: The URL to clone from.
   text_git_remote_path_note: The absolute filesystem path to clone to. Leave blank to auto-populate from URL.
+  config:
+    title: Git Remote Settings
+    repo_clone_path: Repository clone path
+    clone_path_hint: Path where repository is cloned. Relative to plugin directory.

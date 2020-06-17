@@ -6,9 +6,6 @@ require_dependency 'redmine_git_remote/poor_mans_capture3'
 
 class Repository::GitRemote < Repository::Git
 
-  PLUGIN_ROOT = Pathname.new(__FILE__).join("../../../..").realpath.to_s
-  PATH_PREFIX = PLUGIN_ROOT + "/repos/"
-
   before_validation :initialize_clone
 
   safe_attributes 'extra_info', :if => lambda {|repository, _user| repository.new_record?}
@@ -81,7 +78,11 @@ class Repository::GitRemote < Repository::Git
 
     p = parse(attributes["extra_info"]["extra_clone_url"])
     self.identifier = p[:identifier] if identifier.empty?
-    self.url = PATH_PREFIX + p[:path] if url.empty?
+
+    base_path = Setting.plugin_redmine_git_remote['git_remote_repo_clone_path']
+    base_path = base_path + "/" unless base_path.end_with?("/")
+
+    self.url = base_path + p[:path] if url.empty?
 
     err = ensure_possibly_empty_clone_exists
     errors.add :extra_clone_url, err if err
