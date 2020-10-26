@@ -36,13 +36,21 @@ class Repository::GitRemote < Repository::Git
     return p[:host]
   end
 
+  def clone_protocol_file?
+  	# Check if the repository is a local protocol. Only local protocol of the
+  	# form file://<path> is supported by this method.
+  	clone_url.match(/^file/)
+  end
+
   def clone_protocol_ssh?
     # Possible valid values (via http://git-scm.com/book/ch4-1.html):
+    #  /path/project.git
+    #  file:///path/project.git
     #  ssh://user@server/project.git
     #  user@server:project.git
     #  server:project.git
-    # For simplicity we just assume if it's not HTTP(S), then it's SSH.
-    !clone_url.match(/^http/)
+    # For simplicity we just assume if it's not HTTP(S) or file, then it's SSH.
+    !clone_url.match(/^http/) && !clone_protocol_file
   end
 
   # Hook into Repository.fetch_changesets to also run 'git fetch'.
