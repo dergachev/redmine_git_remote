@@ -15,12 +15,11 @@ module RedmineGitRemote
       rout, wout = IO.pipe
       rerr, werr = IO.pipe
 
-      pid = fork do
+      pid = Process.spawn(*cmd) do
         rerr.close
         rout.close
         STDERR.reopen(werr)
         STDOUT.reopen(wout)
-        exec(*cmd)
       end
 
       wout.close
