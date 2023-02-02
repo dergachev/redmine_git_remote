@@ -2,7 +2,6 @@ require 'redmine/scm/adapters/git_adapter'
 require 'pathname'
 require 'fileutils'
 # require 'open3'
-require_dependency 'redmine_git_remote/poor_mans_capture3'
 
 class Repository::GitRemote < Repository::Git
 
